@@ -4,7 +4,9 @@ var logger = require('winston');
 var auth = require('./auth.json');
 
 //utility
-var util = require('./common/Utility.js')
+var util = require('./common/Utility.js');
+//Database
+var db = require('./database/DBQueries.js');
 
 // Configure logger settings
 logger.remove(logger.transports.Console);
@@ -16,6 +18,16 @@ logger.level = 'debug';
 // Initialize Discord Bot
 var bot = new Discord.Client();
 bot.login(auth.token);
+
+let locDB = null;
+//Initialize local Database
+try{
+  locDB = db.openDB("./database/localDB.db");
+  db.createUserTable(locDB);
+}catch(err){
+  logger.info(err.message);
+}
+
 
 bot.on('ready', function (evt) {
     logger.info('Connected');
@@ -57,6 +69,9 @@ bot.on('message', (message) => {
             case 'alis':
                 message.member.voiceChannel.leave();
                 message.channel.send("As you wish master - " + message.author);
+            break;
+            case 'addUser':
+                db.addUser(message.author.id.toString(), message.author.username,locDB);
             break;
             // Just add any case commands if you want to..
          }
