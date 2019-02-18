@@ -45,13 +45,18 @@ bot.on('message', (message) => {
                   const connection = message.member.voiceChannel;
 
                   connection.join()
-                  .then(connection => console.log('Connected!'))
+                  .then(connection => logger.info('Connected!'))
                   .catch(console.error);
+                  message.channel.send("You called me master - " + message.author + "?");
               }
             }
               else {
-                console.log('Channel does not exist!');
+                logger.info('Channel does not exist!');
               }
+            break;
+            case 'alis':
+                message.member.voiceChannel.leave();
+                message.channel.send("As you wish master - " + message.author);
             break;
             // Just add any case commands if you want to..
          }
