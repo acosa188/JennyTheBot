@@ -1,0 +1,11 @@
+{
+  "name": "Jenny-the-bot",
+  "version": "1.0.0",
+  "description": "Say it and Jenny would do it",
+  "main": "bot.js",
+  "author": "JuneBug",
+  "dependencies": {
+    "discord.io": "https://github.com/woor/discord.io/tarball/gateway_v6",
+    "winston": "^3.2.1"
+  }
+}
