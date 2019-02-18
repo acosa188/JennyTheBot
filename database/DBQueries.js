@@ -78,5 +78,60 @@ module.exports = {
       console.log('Playlist: '+ playlistName +" is added!");
       message.channel.send("Master - " + message.author + ", playlist - "+ playlistName +" has been added.");
     });
+  },
+
+  createSong:function(db){
+    let sql = "CREATE TABLE songs (song_name TEXT PRIMARY KEY,"+
+                                  "song_link TEXT,"+
+                                  "playlist_id TEXT NOT NULL,"+
+                                  "user_id INTEGER NOT NULL)";
+
+    db.run(sql,function(err){
+      if(err){
+        return console.log(err.message);
+      }
+    });
+  },
+
+  //songs methods
+  songToPlaylist:function(songName, songLink, playlistID,userID,db,message){
+    let sql = "INSERT INTO songs VALUES(?,?,?,?)";
+
+    db.run(sql,[songName,songLink,playlistID,userID],function(err){
+      if(err){
+        console.log("song - "+ songName +" is already added.");
+        message.channel.send("Master - " + message.author + ", song - "+ songName +" already exist.");
+        return;
+      }
+      console.log('song: '+ songName +" is added!");
+      message.channel.send("Master - " + message.author + ", song - "+ songName +" has been added.");
+    });
+  },
+
+  getSongsByPlaylistID:function(playlistID,db){
+    let sql = "SELECT s.song_name,s.song_link "+
+              "FROM songs s "+
+              "WHERE s.playlist_id = ?";
+
+    return new Promise(function(resolve, reject){
+      db.all(sql,[playlistID],function(err, rows){
+        if(err){
+          reject(err.message);
+        }
+        resolve(rows);
+      });
+    });
+  },
+
+  updateSongLink:function(songName, songLink ,db){
+    let sql = "UPDATE songs "+
+              "SET song_link = ?"+
+              "WHERE song_name = ?";
+    db.run(sql,[songLink,songName],function(err){
+      if(err){
+        return console.log(err.message);
+      }
+      console.log(songName + ' --- URL updated');
+    });
   }
 }
