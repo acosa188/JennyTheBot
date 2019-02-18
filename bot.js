@@ -1,5 +1,5 @@
 
-var Discord = require('discord.io');
+var Discord = require('discord.js');
 var logger = require('winston');
 var auth = require('./auth.json');
 
@@ -14,10 +14,8 @@ logger.add(new logger.transports.Console, {
 logger.level = 'debug';
 
 // Initialize Discord Bot
-var bot = new Discord.Client({
-   token: auth.token,
-   autorun: true
-});
+var bot = new Discord.Client();
+bot.login(auth.token);
 
 bot.on('ready', function (evt) {
     logger.info('Connected');
@@ -25,11 +23,11 @@ bot.on('ready', function (evt) {
     logger.info(bot.username + ' - (' + bot.id + ')');
 });
 
-bot.on('message', function (user, userID, channelID, message, evt) {
+bot.on('message', (message) => {
     // Our bot needs to know if it will execute a command
     // It will listen for messages that will start with `!`
-    if (message.substring(0, 1) == '!') {
-        var args = message.substring(1).split(' ');
+    if (message.content.substring(0, 1) == '!') {
+        var args = message.content.substring(1).split(' ');
         var cmd = args[0];
 
         args = args.splice(1);
@@ -41,15 +39,18 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                     message: 'Pong!'
                 });
             break;
-            case 'join':
-              if(message.member.voiceChannel){
-                if(!message.author.voiceConnection){
-                    const connection = message.member.voiceChannel;
+            case 'pasok':
+            if(message.member.voiceChannel){
+              if(!message.author.voiceConnection){
+                  const connection = message.member.voiceChannel;
 
-                    connection.join()
-                    .then(connection => logger.info('Connected! to ' + channelID))
-                    .catch(console.error);
-                }
+                  connection.join()
+                  .then(connection => console.log('Connected!'))
+                  .catch(console.error);
+              }
+            }
+              else {
+                console.log('Channel does not exist!');
               }
             break;
             // Just add any case commands if you want to..
