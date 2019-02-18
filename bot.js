@@ -24,6 +24,7 @@ let locDB = null;
 try{
   locDB = db.openDB("./database/localDB.db");
   db.createUserTable(locDB);
+  db.createPlaylist(locDB);
 }catch(err){
   logger.info(err.message);
 }
@@ -66,12 +67,18 @@ bot.on('message', (message) => {
                 logger.info('Channel does not exist!');
               }
             break;
+
             case 'alis':
                 message.member.voiceChannel.leave();
                 message.channel.send("As you wish master - " + message.author);
             break;
+
             case 'addUser':
-                db.addUser(message.author.id.toString(), message.author.username,locDB);
+              db.addUser(message.author.id, message.author.username,locDB,message);            
+            break;
+
+            case 'playlist':
+              db.addPlaylist(message.author.id.toString() + args[0].toString(), args[0].toString(),message.author.id,locDB,message);
             break;
             // Just add any case commands if you want to..
          }

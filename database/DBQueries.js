@@ -35,17 +35,48 @@ module.exports = {
 
   },
 
-  addUser:function(userID,userName,db){
+//user table methods
+  addUser:function(userID,userName,db,message){
     var logTime = new Date();
     let sql = "INSERT INTO users VALUES(?,?,?)";
-    console.log("userID: " + userID);
-    console.log("userName: " + userName);
-    console.log("logDate: " + logTime);
+
+
     db.run(sql,[userID,userName,logTime.toString()],function(err){
+      if(err){
+        console.log("User: "+ userName +" is already added.");
+        message.channel.send("Master - " + message.author + ", your account already exist.");
+        return;
+      }
+      console.log('User: '+ userName +" is added!");
+      message.channel.send("Master - " + message.author+ ", your account has been added.");
+    });
+
+  },
+
+  createPlaylist:function(db){
+    let sql = "CREATE TABLE playlist (playlist_id TEXT PRIMARY KEY,"+
+                                     "playlist_name TEXT NOT NULL,"+
+                                     "user_id INTEGER NOT NULL)";
+
+    db.run(sql,function(err){
       if(err){
         return console.log(err.message);
       }
-      console.log('Rows inserted ${this.changes}');
+    });
+  },
+
+  //playlist methods
+  addPlaylist:function(playlistID,playlistName,userID,db,message){
+    let sql = "INSERT INTO playlist VALUES(?,?,?)";
+
+    db.run(sql,[playlistID,playlistName,userID],function(err){
+      if(err){
+        console.log("playlist - "+ playlistName +" is already added.");
+        message.channel.send("Master - " + message.author + ", playlist - "+ playlistName +" already exist.");
+        return;
+      }
+      console.log('Playlist: '+ playlistName +" is added!");
+      message.channel.send("Master - " + message.author + ", playlist - "+ playlistName +" has been added.");
     });
   }
 }
