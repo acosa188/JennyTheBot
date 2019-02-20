@@ -11,6 +11,7 @@
     "ffmpeg-binaries": "^4.0.0",
     "sqlite3": "^4.0.6",
     "winston": "^3.2.1",
-    "yt-search": "^0.4.1"
+    "yt-search": "^0.4.1",
+    "ytdl-core-discord": "^1.0.2"
   }
 }

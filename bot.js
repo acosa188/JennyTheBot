@@ -108,6 +108,45 @@ bot.on('message', (message) => {
 
             break;
 
+            case 'playSong':
+            if(message.member.voiceChannel){
+              if(!message.author.voiceConnection){
+                  const connection = message.member.voiceChannel;
+
+                  connection.join()
+                  .then(connection => {
+                    musicbot.playSong(connection,args[0]);
+                    message.channel.send("Playing music!");
+                  })
+                  .catch(console.error);
+
+              }
+            }
+            else {
+              logger.info('Channel does not exist!');
+            }
+
+            break;
+            case 'playSongs':
+            if(message.member.voiceChannel){
+              if(!message.author.voiceConnection){
+                  const connection = message.member.voiceChannel;
+
+                  connection.join()
+                  .then(connection => {
+                    musicbot.playSongs(connection,message.author.id.toString() + args[0],locDB);
+                    //musicbot.playSong(connection,args[0]);
+                    message.channel.send("Playing music!");
+                  })
+                  .catch(console.error);
+
+              }
+            }
+            else {
+              logger.info('Channel does not exist!');
+            }
+            break;
+
             // Just add any case commands if you want to..
          }
      }

@@ -1,7 +1,8 @@
 
 var logger = require('winston');
 const youtubesearch = require("yt-search");
-
+const youtube = require("ytdl-core-discord");
+const refme = this;
 // Configure logger settings
 logger.remove(logger.transports.Console);
 logger.add(new logger.transports.Console, {
@@ -11,25 +12,20 @@ logger.level = 'debug';
 
 var dbTools = require('../database/DBQueries.js');
 
-function embeddedMsg(data){
+async function playSong(connection, playlist){
+  var dispatcher = connection.playOpusStream(await youtube(playlist[0].song_link));
 
-  let _fields = [];
-  data.name.forEach((songName)=>{
-    _fields.push({name:songName,value:"Under construction!"});
+  if(playlist.length != 0){
+    playlist.shift();
+  }
+  dispatcher.on("end", function(){
+    if(playlist[0]){
+      playSong(connection,playlist);
+    }else{
+      console.log("done");
+    }
   });
-
-  let emdData = {embed:{
-    color:3447003,
-    author:{
-      name: "Jenny The Bot"
-    },
-    title: "Playlist Songs",
-    fields: _fields,
-    timestamp: new Date()
-  }};
-  return emdData;
 }
-
 module.exports = {
   displaySongs:function(playlistID,db,message){
 
@@ -74,6 +70,33 @@ module.exports = {
         let videos = res.videos.slice(0,1);
         resolve(videos[0]);
       });
+    });
+  },
+
+  playSong:async function(connection, playlist){
+    var dispatcher = connection.playOpusStream(await youtube(playlist[0].song_link));
+
+    if(playlist.length != 0){
+      playlist.shift();
+    }
+    dispatcher.on("end", function(){
+    if(playlist[0]){
+      playSong(connection,playlist);
+    }else{
+      console.log("done");
+    }
+  });
+
+  },
+  playSongs: async function(connection, playlistID, db){
+    var songsQueue = [];
+    dbTools.getSongsByPlaylistID(playlistID,db).then(res=>{
+      res.forEach((row)=>{
+        songsQueue.push(row);
+      });
+      this.playSong(connection,songsQueue);
+    }).catch(err=>{
+        console.log(err);
     });
 
   }
