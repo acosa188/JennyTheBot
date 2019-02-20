@@ -81,9 +81,11 @@ module.exports = {
   },
 
   createSong:function(db){
-    let sql = "CREATE TABLE songs (song_name TEXT PRIMARY KEY,"+
+    let sql = "CREATE TABLE songs (song_id INTEGER PRIMARY KEY AUTOINCREMENT,"+
+                                  "song_name TEXT,"+
                                   "song_link TEXT,"+
-                                  "playlist_id TEXT NOT NULL,"+
+                                  "song_author TEXT,"+
+                                  "playlist_id TEXT,"+
                                   "user_id INTEGER NOT NULL)";
 
     db.run(sql,function(err){
@@ -94,11 +96,12 @@ module.exports = {
   },
 
   //songs methods
-  songToPlaylist:function(songName, songLink, playlistID,userID,db,message){
-    let sql = "INSERT INTO songs VALUES(?,?,?,?)";
+  songToPlaylist:function(songName, songLink, songAuthor, playlistID,userID,db,message){
+    let sql = "INSERT INTO songs (song_name,song_link,song_author,playlist_id,user_id) VALUES(?,?,?,?,?)";
 
-    db.run(sql,[songName,songLink,playlistID,userID],function(err){
+    db.run(sql,[songName,songLink,songAuthor,playlistID,userID],function(err){
       if(err){
+        console.log(err.message);
         console.log("song - "+ songName +" is already added.");
         message.channel.send("Master - " + message.author + ", song - "+ songName +" already exist.");
         return;
@@ -109,7 +112,7 @@ module.exports = {
   },
 
   getSongsByPlaylistID:function(playlistID,db){
-    let sql = "SELECT s.song_name,s.song_link "+
+    let sql = "SELECT s.song_name,s.song_link, s.song_author "+
               "FROM songs s "+
               "WHERE s.playlist_id = ?";
 

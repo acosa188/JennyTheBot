@@ -1,4 +1,3 @@
-
 var Discord = require('discord.js');
 var logger = require('winston');
 var auth = require('./auth.json');
@@ -77,7 +76,12 @@ bot.on('message', (message) => {
             break;
 
             case 'register':
-              db.addUser(message.author.id, message.author.username,locDB,message);
+              if(args.length == 0){
+                db.addUser(message.author.id, message.author.username,locDB,message);
+              }else {
+                message.channel.send("Master - " + message.author + ", you mean: <!register>?.");
+              }
+
             break;
 
             case 'playlist':
@@ -87,9 +91,7 @@ bot.on('message', (message) => {
             case 'songToPlaylist':
               var searchName = args[0];
               var res = musicbot.searchSong(searchName).then(res=>{
-                console.log(res.title);
-                console.log(searchName);
-                db.songToPlaylist(res.title,'https://www.youtube.com'+res.url,message.author.id.toString() + args[1].toString(),message.author.id, locDB, message);
+                db.songToPlaylist(res.title,'https://www.youtube.com'+res.url,res.author.name,message.author.id.toString() + args[1].toString(),message.author.id, locDB, message);
               }).catch(err=>{
                 console.log(err.message);
               });
@@ -98,15 +100,12 @@ bot.on('message', (message) => {
             break;
 
             case 'displaySongs':
+            if(args.length == 1){
               musicbot.displaySongs(message.author.id.toString() + args[0], locDB, message);
-            break;
+            }else {
+              message.channel.send("Master - " + message.author + ", you mean: <!displaySongs> <PlaylistName>?.");
+            }
 
-            case 'search':
-              var res = musicbot.searchSong(args).then(res=>{
-                console.log(res.title);
-              }).catch(err=>{
-                console.log(err.message);
-              });
             break;
 
             // Just add any case commands if you want to..
