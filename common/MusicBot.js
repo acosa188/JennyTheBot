@@ -98,6 +98,13 @@ module.exports = {
     }).catch(err=>{
         console.log(err);
     });
+  },
 
+  checkUserExist: async function(userID,db){
+      return dbTools.checkUserExist(userID,db).then(function(res){
+        return res;
+      }).catch(err=>{
+        console.log(err);
+      });
   }
 }

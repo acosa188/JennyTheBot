@@ -38,7 +38,7 @@ bot.on('ready', function (evt) {
     logger.info(bot.username + ' - (' + bot.id + ')');
 });
 
-bot.on('message', (message) => {
+bot.on('message',(message) => {
     // Our bot needs to know if it will execute a command
     // It will listen for messages that will start with `!`
     if (message.content.substring(0, 1) == '!') {
@@ -75,27 +75,39 @@ bot.on('message', (message) => {
                 message.channel.send("As you wish master - " + message.author);
             break;
 
-            case 'register':
-              if(args.length == 0){
-                db.addUser(message.author.id, message.author.username,locDB,message);
+            case 'playlist':
+              if(args.length == 1){
+                musicbot.checkUserExist(message.author.id,locDB).then(res=>{
+                  if(res.length > 0){
+                    db.addPlaylist(message.author.id.toString() + args[0].toString(), args[0].toString(),message.author.id,locDB,message);
+                  }else{
+                    logger.info('User does not exist');
+                    logger.info('Creating user...');
+                    db.addUser(message.author.id, message.author.username,locDB,message);
+                    logger.info('Adding playlist '+ args[0].toString() +' ...');
+                    db.addPlaylist(message.author.id.toString() + args[0].toString(), args[0].toString(),message.author.id,locDB,message);
+                  }
+                }).catch(err=>{
+                  message.channel.send("Master - "+message.author+" there seems to be a problem!");
+                });
+
               }else {
-                message.channel.send("Master - " + message.author + ", you mean: <!register>?.");
+                message.channel.send("Master - " + message.author + ", you mean: <!playlist> <PlaylistName>?.");
               }
 
             break;
 
-            case 'playlist':
-              db.addPlaylist(message.author.id.toString() + args[0].toString(), args[0].toString(),message.author.id,locDB,message);
-            break;
-
             case 'songToPlaylist':
+            if(args.length == 2){
               var searchName = args[0];
               var res = musicbot.searchSong(searchName).then(res=>{
                 db.songToPlaylist(res.title,'https://www.youtube.com'+res.url,res.author.name,message.author.id.toString() + args[1].toString(),message.author.id, locDB, message);
               }).catch(err=>{
                 console.log(err.message);
               });
-
+            }else {
+              message.channel.send("Master - " + message.author + ", you mean: <!songToPlaylist> <SongName> <PlaylistName>?.");
+            }
 
             break;
 
@@ -146,7 +158,6 @@ bot.on('message', (message) => {
               logger.info('Channel does not exist!');
             }
             break;
-
             // Just add any case commands if you want to..
          }
      }

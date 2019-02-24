@@ -136,5 +136,21 @@ module.exports = {
       }
       console.log(songName + ' --- URL updated');
     });
+  },
+
+  //checks if user exist
+  checkUserExist: function(userID){
+    let sql = "SELECT * "+
+              "FROM users u "+
+              "WHERE u.user_id = ? ";
+    return new Promise(function(resolve,reject){
+      db.all(sql,[userID], function(err, rows){
+        if(err){
+          reject(err.message);
+        }
+        resolve(rows);
+      });
+    });
+
   }
 }
