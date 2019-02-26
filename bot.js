@@ -171,7 +171,6 @@ bot.on('message',(message) => {
                 musicDispatch.resume();
               }
             break;
-            break;
             case 'playSongs':
             if(message.member.voiceChannel){
               if(!message.author.voiceConnection){
@@ -190,6 +189,14 @@ bot.on('message',(message) => {
             else {
               logger.info('Channel does not exist!');
             }
+            break;
+            case 'help':
+            if(args.length == 0){
+              musicbot.help(message);
+            }else{
+              message.channel.send("Master - " + message.author + ", you mean: [>help]?.");
+            }
+
             break;
             // Just add any case commands if you want to..
          }

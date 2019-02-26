@@ -27,6 +27,30 @@ async function playSong(connection, playlist){
   });
 }
 module.exports = {
+  help:function(message){
+    let emdData = {embed:{
+      color: 3447003,
+      author:{
+        name: " "
+      },
+      title: "",
+      fields: [
+        {
+          name:  "Basic Commands",
+          value: "[**>play [title]**](none) Plays the specified song.\n"+
+                 "[**>pause**](none) Pause the current song.\n"+
+                 "[**>resume**](none) Resume the song being paused.\n"+
+                 "[**>stop**](none) Stops the current song.\n"+
+                 "[**>enter**](none) Jenny joins the channel.\n"+
+                 "[**>leave**](none) Jenny leaves the channel."
+        }
+      ],
+      timestamp: new Date()
+    }};
+
+    message.channel.send(emdData);
+  },
+
   displaySongs:function(playlistID,db,message){
 
     dbTools.getSongsByPlaylistID(playlistID,db).then(res=>{
