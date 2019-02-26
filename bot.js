@@ -123,7 +123,7 @@ bot.on('message',(message) => {
 
             case 'play':
             if(message.member.voiceChannel){
-              if(!message.author.voiceConnection){
+              if(!message.member.voiceConnection){
                   const connection = message.member.voiceChannel;
                   connection.join()
                   .then(connection => {
@@ -132,11 +132,32 @@ bot.on('message',(message) => {
 
                       musicbot.play(connection,'https://www.youtube.com'+res.url).then(res=>{
                         musicDispatch = res;
+                        res.on("end", function(){
+                          setTimeout(function(){
+                            message.member.voiceChannel.leave();
+                          },60000);
+                        });
                       }).catch(err=>{
                         logger.info(err.message);
                       });
 
-                      message.channel.send("Playing -- "+ res.title);
+                      var emd =  {embed:{
+                        color: 3447003,
+                        author:{
+                          name: " "
+                        },
+                        title: "",
+                        fields: [
+                          {
+                            name:  "Playing",
+                            value: res.title
+                          }
+                        ],
+                        timestamp: new Date()
+                      }
+                    }
+                      message.channel.send(emd);
+                      
                     }).catch(err=>{
                       logger.info(err.message);
                     });
