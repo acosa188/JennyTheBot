@@ -38,10 +38,11 @@ bot.on('ready', function (evt) {
     logger.info(bot.username + ' - (' + bot.id + ')');
 });
 
+var musicDispatch = null;
 bot.on('message',(message) => {
     // Our bot needs to know if it will execute a command
     // It will listen for messages that will start with `!`
-    if (message.content.substring(0, 1) == '!') {
+    if (message.content.substring(0, 1) == '>') {
         var args = message.content.substring(1).split(' ');
         var cmd = args[0];
 
@@ -120,15 +121,26 @@ bot.on('message',(message) => {
 
             break;
 
-            case 'playSong':
+            case 'play':
             if(message.member.voiceChannel){
               if(!message.author.voiceConnection){
                   const connection = message.member.voiceChannel;
-
                   connection.join()
                   .then(connection => {
-                    musicbot.playSong(connection,args[0]);
-                    message.channel.send("Playing music!");
+                    var searchName = args.join("");
+                    var res = musicbot.searchSong(searchName).then(res=>{
+
+                      musicbot.play(connection,'https://www.youtube.com'+res.url).then(res=>{
+                        musicDispatch = res;
+                      }).catch(err=>{
+                        logger.info(err.message);
+                      });
+
+                      message.channel.send("Playing -- "+ res.title);
+                    }).catch(err=>{
+                      logger.info(err.message);
+                    });
+
                   })
                   .catch(console.error);
 
@@ -138,6 +150,27 @@ bot.on('message',(message) => {
               logger.info('Channel does not exist!');
             }
 
+            break;
+
+            case 'end':
+              if(musicDispatch){
+                musicDispatch.pause();
+                musicDispatch.end();
+              }
+
+            break;
+
+            case 'pause':
+              if(musicDispatch){
+                musicDispatch.pause();
+              }
+            break;
+
+            case 'resume':
+              if(musicDispatch){
+                musicDispatch.resume();
+              }
+            break;
             break;
             case 'playSongs':
             if(message.member.voiceChannel){

@@ -72,7 +72,9 @@ module.exports = {
       });
     });
   },
-
+  play: async function(connection,songLink){
+    return connection.playOpusStream(await youtube(songLink));
+  },
   playSong:async function(connection, playlist){
     var dispatcher = connection.playOpusStream(await youtube(playlist[0].song_link));
 
